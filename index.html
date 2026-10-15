@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#e9edc9">
+<title>A4Fork</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23ccd5ae'/%3E%3Cg fill='%234a5230'%3E%3Crect x='9' y='5' width='2.4' height='9' rx='1.2'/%3E%3Crect x='13.2' y='5' width='2.4' height='9' rx='1.2'/%3E%3Crect x='17.4' y='5' width='2.4' height='9' rx='1.2'/%3E%3Crect x='21.6' y='5' width='2.4' height='9' rx='1.2'/%3E%3Cpath d='M9 13h15c0 3-3 5-6 5.5V27a1.5 1.5 0 0 1-3 0v-8.5C12 18 9 16 9 13z'/%3E%3C/g%3E%3C/svg%3E">
+<style>
+:root{--bg:#e9edc9;--card:#fefae0;--ink:#2f3320;--muted:#6f7356;--line:#ccd5ae;--soft:#e9edc9;--sage:#ccd5ae;--peach:#faedcd;--accent:#4a5230;--good:#4f7a28;--mid:#b07a2a;--bad:#a8442f}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);-webkit-tap-highlight-color:transparent}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 16px 10px;border-bottom:1px solid var(--line)}
+.brand{padding:16px 16px 4px;max-width:640px;margin:0 auto}
+.fork{display:block;width:100%;height:auto}
+h1{font-size:34px;margin:0 0 8px;letter-spacing:-.02em;line-height:1.1}
+.search{display:flex;align-items:center;gap:8px;background:var(--peach);border:1px solid #ecd3a4;border-radius:12px;padding:0 12px}
+.search svg{flex:none;color:var(--muted)}
+.search input{flex:1;border:0;outline:0;font-size:16px;padding:12px 0;background:transparent;color:var(--ink);min-width:0}
+.search .clear{border:0;background:none;font-size:18px;color:var(--muted);cursor:pointer;display:none}
+.chips{display:flex;gap:8px;overflow-x:auto;margin-top:10px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 14px;font-size:14px;white-space:nowrap;cursor:pointer;color:var(--ink)}
+.chip.on{background:var(--sage);border-color:var(--accent);color:var(--ink);font-weight:600}
+.row{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:14px;color:var(--muted);gap:8px}
+select{font-size:14px;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--card);color:var(--ink)}
+main{padding:12px 16px 110px;max-width:640px;margin:0 auto}
+.card{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px;cursor:pointer}
+.card .info{flex:1;min-width:0}
+.card .name{font-weight:600;font-size:16px;overflow-wrap:anywhere}
+.card .meta{font-size:13px;color:var(--muted);margin-top:3px}
+.mine{font-size:13px;margin-top:3px;color:var(--accent);font-weight:600}
+.mine.none{color:var(--muted);font-weight:400}
+.score{min-width:58px;text-align:center}
+.score b{display:block;font-size:22px}
+.score small{font-size:11px;color:var(--muted)}
+.empty{text-align:center;color:var(--muted);padding:40px 10px;line-height:1.5}
+.fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));background:var(--accent);color:#fff;border:0;border-radius:999px;padding:14px 20px;font-size:16px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.2);cursor:pointer;z-index:6}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:10;padding:16px}
+.overlay.open{display:flex}
+.sheet{background:var(--card);width:100%;max-width:440px;border-radius:18px;padding:20px 16px;max-height:calc(100dvh - 32px);overflow:auto;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+.sheet h2{margin:0 0 4px;font-size:19px;overflow-wrap:anywhere}
+.sheet .sub{color:var(--muted);font-size:14px}
+.label{font-size:14px;font-weight:600;margin-top:16px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:10px 0 0}
+.grid button{font-size:18px;padding:12px 0;border-radius:10px;border:1px solid var(--line);background:var(--soft);cursor:pointer;color:var(--ink)}
+.grid button.sel{background:var(--accent);color:#fff;border-color:var(--accent)}
+.field{width:100%;font-size:16px;padding:12px;border:1px solid var(--line);border-radius:10px;margin-top:8px;color:var(--ink);background:var(--card)}
+.field:focus{outline:2px solid var(--sage);border-color:var(--accent)}
+.btn{width:100%;font-size:16px;padding:14px;border-radius:12px;border:0;background:var(--accent);color:#fff;font-weight:600;margin-top:16px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--muted);margin-top:6px}
+.btn:disabled{opacity:.45}
+.warn{background:var(--peach);border:1px solid #ecd3a4;border-radius:10px;padding:10px;font-size:14px;margin-top:10px;line-height:1.5}
+.link{border:0;background:none;color:var(--accent);font-weight:600;padding:0;cursor:pointer;font-size:14px;text-align:left}
+.banner{background:var(--peach);font-size:13px;padding:8px 16px;border-bottom:1px solid #ecd3a4}
+.stats{display:flex;gap:10px;margin-top:14px}
+.stat{flex:1;background:var(--soft);border-radius:12px;padding:10px;text-align:center}
+.stat b{display:block;font-size:24px}
+.stat span{font-size:12px;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--accent);color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:20;max-width:90vw;text-align:center}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div id="banner" class="banner" hidden></div>
+<div class="brand">
+  <h1>A4Fork</h1>
+  <svg class="fork" viewBox="0 0 400 28" role="img" aria-label="Garfo"><g fill="#4a5230"><rect x="2" y="12" width="330" height="4" rx="2"/><rect x="327" y="2" width="6" height="24" rx="2"/><rect x="330" y="2" width="68" height="3" rx="1.5"/><rect x="330" y="9" width="68" height="3" rx="1.5"/><rect x="330" y="16" width="68" height="3" rx="1.5"/><rect x="330" y="23" width="68" height="3" rx="1.5"/></g></svg>
+</div>
+<header>
+  <div class="search">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+    <input id="q" type="search" placeholder="Procurar prato…" autocomplete="off">
+    <button class="clear" id="qclear" aria-label="Limpar">×</button>
+  </div>
+  <div class="chips" id="filters"></div>
+  <div class="row">
+    <span id="count"></span>
+    <select id="sort" aria-label="Ordenar">
+      <option value="best">Melhor pontuação primeiro</option>
+      <option value="worst">Pior pontuação primeiro</option>
+      <option value="az">A → Z</option>
+      <option value="za">Z → A</option>
+      <option value="votes">Mais votados</option>
+    </select>
+  </div>
+</header>
+<main id="list"><div class="empty">A carregar…</div></main>
+<button class="fab" id="addBtn">＋ Novo prato</button>
+<div class="overlay" id="overlay"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+// =====================================================================
+//  CONFIGURAÇÃO DO FIREBASE — cola aqui o objeto da consola do Firebase.
+//  Enquanto ficar vazio, a app corre em MODO DEMONSTRAÇÃO (dados só
+//  neste dispositivo).
+// =====================================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyDus-kPBn3z9ytTXX2wR5S0jIZH_zJCfmc",
+  authDomain: "a4fork.firebaseapp.com",
+  projectId: "a4fork",
+  storageBucket: "a4fork.firebasestorage.app",
+  messagingSenderId: "246925149864",
+  appId: "1:246925149864:web:09ac6cd134f9d9b805e49d"
+};
+
+const CATS = { peixe: "Peixe", carne: "Carne", vegetariano: "Vegetariano" };
+const ICONS = { peixe: "🐟", carne: "🥩", vegetariano: "🥦" };
+const catLabel = c => CATS[c] ? `${ICONS[c]} ${CATS[c]}` : "";
+
+// ---------- utilitários ----------
+const norm = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+const slug = s => norm(s).replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+const clean = s => s.replace(/\s+/g, " ").trim();
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const avg = d => d.count ? d.sum / d.count : null;
+const fmt = n => n == null ? "–" : n.toFixed(1).replace(".", ",");
+const color = n => n == null ? "var(--muted)" : n >= 7 ? "var(--good)" : n >= 5 ? "var(--mid)" : "var(--bad)";
+const $ = id => document.getElementById(id);
+function toast(msg) {
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 2200);
+}
+
+// ---------- backend Firebase ----------
+async function firebaseBackend(config) {
+  const V = "10.12.2", base = `https://www.gstatic.com/firebasejs/${V}/`;
+  const [{ initializeApp }, A, F] = await Promise.all([
+    import(base + "firebase-app.js"),
+    import(base + "firebase-auth.js"),
+    import(base + "firebase-firestore.js")
+  ]);
+  const app = initializeApp(config);
+  const auth = A.getAuth(app);
+  await auth.authStateReady();
+  const uid = auth.currentUser ? auth.currentUser.uid : (await A.signInAnonymously(auth)).user.uid;
+  const db = F.getFirestore(app);
+
+  return {
+    uid,
+    subscribeDishes(cb, onErr) {
+      return F.onSnapshot(F.collection(db, "dishes"),
+        snap => cb(snap.docs.map(d => ({ id: d.id, ...d.data() }))), onErr);
+    },
+    subscribeMyVotes(cb, onErr) {
+      const q = F.query(F.collection(db, "votes"), F.where("uid", "==", uid));
+      return F.onSnapshot(q, snap => {
+        const m = {}; snap.docs.forEach(d => m[d.data().dishId] = d.data().score); cb(m);
+      }, onErr);
+    },
+    async addDish(id, name, category) {
+      const ref = F.doc(db, "dishes", id);
+      await F.runTransaction(db, async tx => {
+        if ((await tx.get(ref)).exists()) throw new Error("exists");
+        tx.set(ref, { name, category, sum: 0, count: 0, createdAt: F.serverTimestamp(), createdBy: uid });
+      });
+    },
+    async rate(dishId, score) {
+      const dref = F.doc(db, "dishes", dishId);
+      const vref = F.doc(db, "votes", `${dishId}_${uid}`);
+      await F.runTransaction(db, async tx => {
+        const d = await tx.get(dref), v = await tx.get(vref);
+        if (!d.exists()) throw new Error("missing");
+        const old = v.exists() ? v.data().score : null;
+        const data = d.data();
+        tx.update(dref, { sum: data.sum - (old ?? 0) + score, count: data.count + (old == null ? 1 : 0) });
+        tx.set(vref, { dishId, uid, score, updatedAt: F.serverTimestamp() });
+      });
+    }
+  };
+}
+
+// ---------- backend de demonstração (localStorage) ----------
+function demoBackend() {
+  const KEY = "refeitorio-demo";
+  let st; try { st = JSON.parse(localStorage.getItem(KEY)) || null; } catch { st = null; }
+  st = st || { dishes: {}, votes: {} };
+  const subs = [];
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch {} subs.forEach(f => f()); };
+  return {
+    uid: "demo",
+    subscribeDishes(cb) { const f = () => cb(Object.entries(st.dishes).map(([id, d]) => ({ id, ...d }))); subs.push(f); f(); },
+    subscribeMyVotes(cb) { const f = () => cb({ ...st.votes }); subs.push(f); f(); },
+    async addDish(id, name, category) {
+      if (st.dishes[id]) throw new Error("exists");
+      st.dishes[id] = { name, category, sum: 0, count: 0 }; save();
+    },
+    async rate(id, score) {
+      const d = st.dishes[id], old = st.votes[id];
+      d.sum = d.sum - (old ?? 0) + score; d.count += old == null ? 1 : 0;
+      st.votes[id] = score; save();
+    }
+  };
+}
+
+// ---------- estado e interface ----------
+let api, dishes = [], myVotes = {};
+const ui = { q: "", cat: "all", sort: "best" };
+
+function renderFilters() {
+  const opts = [["all", "Todos"], ...Object.entries(CATS)];
+  $("filters").innerHTML = opts.map(([k, l]) =>
+    `<button class="chip ${ui.cat === k ? "on" : ""}" data-cat="${k}">${l}</button>`).join("");
+}
+
+function visibleDishes() {
+  const q = norm(ui.q);
+  let list = dishes.filter(d =>
+    (ui.cat === "all" || d.category === ui.cat) && (!q || norm(d.name).includes(q)));
+  const az = (a, b) => a.name.localeCompare(b.name, "pt", { sensitivity: "base" });
+  const byAvg = dir => (a, b) => {
+    const x = avg(a), y = avg(b);
+    if (x == null && y == null) return az(a, b);
+    if (x == null) return 1;
+    if (y == null) return -1;
+    return dir * (y - x) || b.count - a.count || az(a, b);
+  };
+  const sorters = {
+    best: byAvg(1), worst: byAvg(-1), az, za: (a, b) => az(b, a),
+    votes: (a, b) => b.count - a.count || az(a, b)
+  };
+  return list.sort(sorters[ui.sort]);
+}
+
+function render() {
+  const list = visibleDishes();
+  $("count").textContent = `${list.length} ${list.length === 1 ? "prato" : "pratos"}`;
+  if (!dishes.length) {
+    $("list").innerHTML = `<div class="empty">Ainda não há pratos.<br>Toca em <b>＋ Novo prato</b> para acrescentar o de hoje.</div>`;
+    return;
+  }
+  if (!list.length) {
+    $("list").innerHTML = `<div class="empty">Nenhum prato encontrado.${ui.q ? `<br><button class="link" id="addFromSearch">Acrescentar “${esc(clean(ui.q))}”</button>` : ""}</div>`;
+    return;
+  }
+  $("list").innerHTML = list.map(d => {
+    const a = avg(d), mine = myVotes[d.id];
+    return `<div class="card" data-id="${esc(d.id)}">
+      <div class="info">
+        <div class="name">${esc(d.name)}</div>
+        <div class="meta">${catLabel(d.category)} · ${d.count} ${d.count === 1 ? "voto" : "votos"}</div>
+        <div class="mine ${mine == null ? "none" : ""}">${mine == null ? "Ainda não votaste" : `A tua nota: ${mine}`}</div>
+      </div>
+      <div class="score"><b style="color:${color(a)}">${fmt(a)}</b><small>média</small></div>
+    </div>`;
+  }).join("");
+}
+
+// ---------- folhas (modais) ----------
+const openSheet = html => { $("sheet").innerHTML = html; $("overlay").classList.add("open"); };
+const closeSheet = () => { $("overlay").classList.remove("open"); sheetDish = null; };
+$("overlay").addEventListener("click", e => { if (e.target.id === "overlay") closeSheet(); });
+
+let sheetDish = null;
+function openDish(id) {
+  sheetDish = id;
+  const d = dishes.find(x => x.id === id); if (!d) return closeSheet();
+  const a = avg(d), mine = myVotes[id];
+  openSheet(`
+    <h2>${esc(d.name)}</h2>
+    <div class="sub">${catLabel(d.category)}</div>
+    <div class="stats">
+      <div class="stat"><b style="color:${color(a)}">${fmt(a)}</b><span>Média geral</span></div>
+      <div class="stat"><b style="color:${color(mine)}">${mine ?? "–"}</b><span>A tua nota</span></div>
+      <div class="stat"><b>${d.count}</b><span>${d.count === 1 ? "Voto" : "Votos"}</span></div>
+    </div>
+    <div class="label">${mine == null ? "Dá a tua nota" : "Mudar a tua nota"}</div>
+    <div class="grid" id="rateGrid">${[1,2,3,4,5,6,7,8,9,10].map(n =>
+      `<button data-n="${n}" class="${mine === n ? "sel" : ""}">${n}</button>`).join("")}</div>
+    <button class="btn ghost" data-close>Fechar</button>`);
+}
+
+$("sheet").addEventListener("click", async e => {
+  if (e.target.closest("[data-close]")) return closeSheet();
+  const rb = e.target.closest("#rateGrid button");
+  if (rb && sheetDish) {
+    const n = +rb.dataset.n, id = sheetDish;
+    rb.parentElement.querySelectorAll("button").forEach(b => b.disabled = true);
+    try { await api.rate(id, n); toast(`Nota ${n} guardada`); }
+    catch (err) { console.error(err); toast("Não foi possível guardar. Tenta outra vez."); }
+    if (sheetDish === id) openDish(id);
+  }
+});
+
+function openAdd(prefill = "") {
+  sheetDish = null;
+  const f = { name: prefill, cat: null, score: null };
+  openSheet(`
+    <h2>Novo prato</h2>
+    <div class="label">Nome</div>
+    <input class="field" id="nName" maxlength="60" placeholder="ex.: Bacalhau à Brás" value="${esc(prefill)}">
+    <div id="nWarn"></div>
+    <div class="label">Tipo</div>
+    <div class="chips" id="nCats">${Object.entries(CATS).map(([k, l]) =>
+      `<button class="chip" data-c="${k}">${l}</button>`).join("")}</div>
+    <div class="label">A tua nota <span style="font-weight:400;color:var(--muted)">(opcional)</span></div>
+    <div class="grid" id="nGrid">${[1,2,3,4,5,6,7,8,9,10].map(n => `<button data-n="${n}">${n}</button>`).join("")}</div>
+    <button class="btn" id="nSave" disabled>Acrescentar prato</button>
+    <button class="btn ghost" data-close>Cancelar</button>`);
+
+  const name = $("nName"), warn = $("nWarn"), save = $("nSave");
+  const check = () => {
+    f.name = clean(name.value);
+    const s = slug(f.name);
+    const exact = s && dishes.find(d => d.id === s);
+    const q = norm(f.name);
+    const similar = !exact && q.length >= 3 ? dishes.filter(d => norm(d.name).includes(q)).slice(0, 4) : [];
+    if (exact) {
+      warn.innerHTML = `<div class="warn">Este prato já existe: <button class="link" data-open="${esc(exact.id)}">${esc(exact.name)}</button></div>`;
+    } else if (similar.length) {
+      warn.innerHTML = `<div class="warn">Pratos parecidos: ${similar.map(d =>
+        `<button class="link" data-open="${esc(d.id)}">${esc(d.name)}</button>`).join(", ")}</div>`;
+    } else warn.innerHTML = "";
+    save.disabled = !s || f.name.length < 2 || !!exact || !f.cat;
+  };
+  name.addEventListener("input", check);
+  warn.addEventListener("click", e => { const b = e.target.closest("[data-open]"); if (b) openDish(b.dataset.open); });
+  $("nCats").addEventListener("click", e => {
+    const b = e.target.closest("[data-c]"); if (!b) return;
+    f.cat = b.dataset.c;
+    $("nCats").querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c === b)); check();
+  });
+  $("nGrid").addEventListener("click", e => {
+    const b = e.target.closest("[data-n]"); if (!b) return;
+    const n = +b.dataset.n; f.score = f.score === n ? null : n;
+    $("nGrid").querySelectorAll("button").forEach(x => x.classList.toggle("sel", +x.dataset.n === f.score));
+  });
+  save.addEventListener("click", async () => {
+    const id = slug(f.name), nm = f.name.charAt(0).toUpperCase() + f.name.slice(1);
+    save.disabled = true;
+    try {
+      await api.addDish(id, nm, f.cat);
+      if (f.score) await api.rate(id, f.score);
+      toast("Prato acrescentado"); closeSheet();
+    } catch (err) {
+      console.error(err);
+      toast(err.message === "exists" ? "Esse prato já existe." : "Não foi possível guardar. Tenta outra vez.");
+      save.disabled = false;
+    }
+  });
+  check();
+  if (!prefill) setTimeout(() => name.focus(), 50);
+}
+
+// ---------- eventos ----------
+$("q").addEventListener("input", e => { ui.q = e.target.value; $("qclear").style.display = ui.q ? "block" : "none"; render(); });
+$("qclear").addEventListener("click", () => { $("q").value = ""; ui.q = ""; $("qclear").style.display = "none"; render(); });
+$("filters").addEventListener("click", e => { const b = e.target.closest("[data-cat]"); if (b) { ui.cat = b.dataset.cat; renderFilters(); render(); } });
+$("sort").addEventListener("change", e => { ui.sort = e.target.value; render(); });
+$("list").addEventListener("click", e => {
+  if (e.target.closest("#addFromSearch")) return openAdd(clean(ui.q));
+  const c = e.target.closest(".card"); if (c) openDish(c.dataset.id);
+});
+$("addBtn").addEventListener("click", () => openAdd());
+
+// ---------- arranque ----------
+(async () => {
+  renderFilters();
+  const configured = firebaseConfig && firebaseConfig.projectId;
+  try {
+    api = configured ? await firebaseBackend(firebaseConfig) : demoBackend();
+  } catch (err) {
+    console.error(err);
+    $("list").innerHTML = `<div class="empty">Não foi possível ligar ao servidor.<br>Verifica a ligação e recarrega a página.</div>`;
+    return;
+  }
+  if (!configured) {
+    const b = $("banner"); b.hidden = false;
+    b.textContent = "Modo demonstração: os dados ficam só neste dispositivo. Configura o Firebase para partilhar.";
+  }
+  const onErr = err => { console.error(err); toast("Erro de ligação ao servidor."); };
+  api.subscribeDishes(list => { dishes = list; render(); if (sheetDish) openDish(sheetDish); }, onErr);
+  api.subscribeMyVotes(m => { myVotes = m; render(); if (sheetDish) openDish(sheetDish); }, onErr);
+})();
+</script>
+</body>
+</html>
